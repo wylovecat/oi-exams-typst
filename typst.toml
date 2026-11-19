@@ -1,0 +1,8 @@
+[package]
+name = "aisichuang-exam"
+version = "0.1.0"
+
+# 该清单的唯一作用是标记 Typst 项目根：
+# Tinymist 在「单文件打开」模式下会向上查找 typst.toml，
+# 以它所在目录作为 --root，从而解析脚本生成的 `#import "/_typst/..."`。
+# 命令行编译不受影响（仍建议显式带 --root .）。

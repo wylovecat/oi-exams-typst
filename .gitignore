@@ -1,0 +1,13 @@
+# 编译产物
+out/
+*.pdf
+# 转换管线中间数据
+_build/raw/
+_build/out/
+_build/gesp_raw/
+_build/gesp_json/
+_build/gesp_mineru/
+__pycache__/
+*.pyc
+# 编辑器
+.vscode/
