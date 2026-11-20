@@ -11,7 +11,9 @@
 
 #import "@preview/cuti:0.2.1": show-cn-fakebold
 
-#let font-latin = (name: "Fira Code", covers: "latin-in-cjk")
+// 卷面必须保留原始运算符：Fira Code / Sarasa 的 != / <= / -> 由 calt 合成，
+// 这里用 DejaVu Sans Mono 作拉丁等宽字体；模板函数内另有 show text 关闭 calt/liga/dlig 兜底。
+#let font-latin = (name: "DejaVu Sans Mono", covers: "latin-in-cjk")
 #let font-cjk = "Sarasa Mono SC"
 #let size-body = 12.5pt
 #let size-title = 15pt
@@ -29,6 +31,8 @@
   month: "",
   doc,
 ) = {
+  // 关闭连字（calt/liga/dlig）：Fira Code / Sarasa Mono 会把 != <= -> 合成 ≠ ≤ →
+  show text: set text(features: (calt: 0, liga: 0, dlig: 0))
   // cuti 的假粗体在网页端没有意义（浏览器有真粗体），其内部盒子在 HTML 导出里也无意义
   show: it => context {
     if target() == "html" { it } else { show-cn-fakebold(it) }
@@ -71,6 +75,9 @@
   )
 
   set text(font: (font-latin, font-cjk), size: size-body, lang: "zh")
+  // 代码块里的中文注释显式落到 font-cjk：默认会由系统字体兜底（Windows 上是隶书），
+  // 换机器就变字形、甚至影响分页；固定后 PDF 可跨构建机复现。
+  show raw: set text(font: (font-latin, font-cjk))
   set text(ligatures: false)
   show "&": it => text(font: font-cjk, it)
 

@@ -1,0 +1,4 @@
+# 统一为 LF：Typst 源码与脚本在 Windows / Linux 上产出一致
+* text=auto eol=lf
+*.png binary
+*.jpg binary

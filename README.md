@@ -17,8 +17,8 @@ CSP-J_S/Round1/<年份>/<卷标>.typ         题卷（学生版，不含答案�
 CSP-J_S/Round1/<年份>/<卷标>-答案.typ    答案与解析
 GESP/<年月>/<年月>-L<级别>.typ           GESP 题卷
 GESP/<年月>/<年月>-L<级别>-答案.typ      GESP 参考答案（表格）
-GESP/INDEX.md                            GESP 总表（卷数/页数/待补公式数）
 papers/<系列>-<年份>-<组别>/index.typ    题目知识构成分析报告正文
+papers/<系列>-<年份>-<组别>/web.typ      单篇的网页入口（HTML 导出用）
 papers/<系列>-<年份>-<组别>/images/      报告的图（正文用相对路径引用）
 _typst/exam.typ                          CSP 第一轮试卷版式库
 _typst/gesp.typ                          GESP 认证版式库
@@ -60,13 +60,19 @@ typst compile --root . --format html --features html \
 
 ## 字体
 
-PDF 版式依赖：
+三个模板各有一套字体，缺字体时会回退到系统字体，版面会走样但不报错：
 
-- `Sarasa Mono SC`（正文等宽中文，与 2023 起的官方卷面一致）
-- `Fira Code`（西文与代码）
-- 方正书宋 / 方正黑体（教材模板用）
+| 模板 | 西文 / 代码 | 中文 |
+|---|---|---|
+| `_typst/exam.typ`（CSP 第一轮） | Fira Code | Sarasa Mono SC |
+| `_typst/gesp.typ`（GESP） | DejaVu Sans Mono | Sarasa Mono SC |
+| `_typst/paper.typ`（分析报告） | Times New Roman | 方正书宋（FZShuSong-Z01） |
 
-缺字体时会回退到系统字体，版面会走样但不报错。网页端不依赖这些字体。
+GESP 用 DejaVu Sans Mono、并在模板里关掉 `calt`/`liga`/`dlig`，是因为
+Fira Code 会把 `!=` `<=` `->` 合成 `≠` `≤` `→`——卷面上必须保留原始运算符。
+
+网页端不依赖这些字体；排版 PDF 时建议用 `--font-path` 固定字体目录，
+避免不同机器字面与分页不一致。
 
 ## 校对状态
 

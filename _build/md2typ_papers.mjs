@@ -24,11 +24,8 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, relative, resolve } from "node:path";
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const BLOG_ROOT = resolve(HERE, "../..");
 const argv = process.argv.slice(2);
 const DRY = argv.includes("--dry");
 
@@ -81,7 +78,7 @@ function htmlTablesToTypst(md) {
       const pending = carry.slice();
       let col = 0;
       const out = [];
-      for (const [, tag, attrs, body] of raw) {
+      for (const [, , attrs, body] of raw) {
         // 若有继承占位正压在这个位置，先把它铺出来
         while (pending.length && pending[0].col === col) {
           const p = pending.shift();
@@ -226,7 +223,15 @@ for (const name of papers) {
     : /提高级/.test(name)
       ? "senior"
       : "";
-  const slug = [series, year, grade].filter(Boolean).join("-").toLowerCase();
+  // 第二轮必须带后缀，否则同年同组别两轮同 slug 互相覆盖；
+  // 第一轮不加，保持现有产物 slug 不变
+  const round = /第二轮/.test(name) ? "r2" : "";
+  let slug = [series, year, grade, round].filter(Boolean).join("-").toLowerCase();
+  if (!m) {
+    // build.mjs 只收录 csp/noip 前缀：给唯一 slug 并显式警告，不再静默丢失
+    slug = `paper-${results.length + 1}`;
+    log(`⚠ ${name}: 非 CSP/NOIP 目录，build.mjs 将跳过该篇`);
+  }
 
   // 引用到的图是否都在
   const used = [...typst.matchAll(/image\("images\/([^"]+)"\)/g)].map(t => t[1]);
@@ -235,7 +240,7 @@ for (const name of papers) {
 
   results.push({
     name,
-    slug: slug || `paper-${results.length + 1}`,
+    slug,
     mdName,
     typst,
     imgCount,

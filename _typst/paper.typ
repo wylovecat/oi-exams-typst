@@ -34,6 +34,8 @@
   subtitle: none,
   doc,
 ) = {
+  // 关闭连字（calt/liga/dlig）：Fira Code / Sarasa Mono 会把 != <= -> 合成 ≠ ≤ →
+  show text: set text(features: (calt: 0, liga: 0, dlig: 0))
   // 伪粗体只对 PDF 有意义（方正宋体没有真 Bold）
   show: it => context {
     if target() == "html" { it } else { show-cn-fakebold(it) }

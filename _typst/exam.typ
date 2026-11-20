@@ -51,6 +51,8 @@
   notice: auto,
   doc,
 ) = {
+  // 关闭连字（calt/liga/dlig）：Fira Code / Sarasa Mono 会把 != <= -> 合成 ≠ ≤ →
+  show text: set text(features: (calt: 0, liga: 0, dlig: 0))
   // cuti 的假粗体靠给中文叠一层描边实现，网页端没有这个需求（浏览器有真粗体），
   // 且它内部的盒子在 HTML 导出里没有意义。
   show: it => context {
@@ -111,7 +113,10 @@
   )
 
   set text(font: (font-latin, font-cjk), size: size-body, lang: "zh")
-  set text(ligatures: false)  // 防止 != >= 被合成为 ≠ ≥
+  set text(ligatures: false)  // liga 兜底；calt 已由函数开头的 show text 关闭
+  // 代码块里的中文注释显式落到 font-cjk：默认会由系统字体兜底（Windows 上是隶书），
+  // 换机器就变字形、甚至影响分页；固定后 PDF 可跨构建机复现。
+  show raw: set text(font: (font-latin, font-cjk))
 
   // Fira Code 的 `&` 和 `δ` 太像，C++ 里的 `x &= x - 1` 会被误读成 δ；
   // 单独把这个字符落到等宽中文字体上（Sarasa 的 `&` 是常规造型）。

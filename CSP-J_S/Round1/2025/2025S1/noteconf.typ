@@ -7,6 +7,8 @@
   date: "默认日期",
   doc,
 )={
+  // 关闭连字（calt/liga/dlig）：Fira Code / Sarasa Mono 会把 != <= -> 合成 ≠ ≤ →
+  show text: set text(features: (calt: 0, liga: 0, dlig: 0))
   //设置代码块行号
   show raw.where(block: true): code => {
     grid(
