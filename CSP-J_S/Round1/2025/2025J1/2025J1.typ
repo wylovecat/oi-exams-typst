@@ -124,7 +124,32 @@ int main() {
 = 阅读程序（程序输入不超过数组或字符串定义的范围；判断题正确填 $checkmark$，错误填 $crossmark$；除特殊说明外，判断题1.5分，选择题3分，共计40分）。
 == 
 
-#raw(read("t16.cpp"),block: true,lang: "cpp")
+```cpp
+#include <cstdio>
+#include <cstring>
+#include <algorithm>
+inline int gcd(int a, int b) {
+  if (b == 0)
+    return a;
+  return gcd(b, a % b);
+}
+int main() {
+  int n;
+  scanf("%d", &n);
+  int ans = 0;
+  for (int i = 1; i <= n; ++i) {
+    for (int j = i + 1; j <= n; ++j) {
+      for (int k = j + 1; k <= n; ++k) {
+        if (gcd(i, j) == 1 && gcd(j, k) == 1 && gcd(i, k) == 1) {
+          ++ans;
+        }
+      }
+    }
+  }
+  printf("%d\n", ans);
+  return 0;
+}
+```
 
 
 
@@ -156,7 +181,30 @@ $bullet$ 单选题
 	+ 2
 
 ==
-#raw(read("t17.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#define ll long long
+int n, k;
+int a[20000];
+int ans[200007];
+int main() {
+  scanf("%d%d", &n, &k);
+  for (int i = 1; i <= n; ++i) {
+    scanf("%d", &a[i]);
+  }
+  std::sort(a + 1, a + n + 1);
+  n = std::unique(a + 1, a + n + 1) - a - 1;
+  for (int i = 1, j = 0; i <= n; ++i) {
+    for (; j < i && a[i] - a[j + 1] > k; ++j) 
+      ;
+    ans[i] = ans[j] + 1;
+  }
+  printf("%d\n", ans[n]);
+  return 0;
+}
+```
 
 
 $bullet$判断题
@@ -190,7 +238,34 @@ $bullet$单选题
 
 
 ==
-#raw(read("t18.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#define ll long long
+int f[5007][5007];
+int a[5007], b[5007];
+int n;
+int main() {
+  scanf("%d", &n);
+  for (int i = 1; i <= n; ++i) {
+    scanf("%d", &a[i]);
+  }
+  for (int i = 1; i <= n; ++i) {
+    scanf("%d", &b[i]);
+  }
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= n; ++j) {
+      f[i][j] = std::max(f[i][j], std::max(f[i - 1][j], f[i][j - 1]));
+      if (a[i] == b[j]) {
+        f[i][j] = std::max(f[i][j], f[i - 1][j - 1] + 1);
+      }
+    }
+  }
+  printf("%d\n", f[n][n]);
+  return 0;
+}
+```
 
 
 $bullet$判断题
@@ -232,7 +307,38 @@ ii）如果原始字符串中一个字符只出现1次，在压缩字符串中�
 
 以下程序实现读取压缩字符串并输出其原始的、解压后的形式。试补全程序。
 
-#raw(read("t19.cpp"),block: true,lang: "cpp")
+```cpp
+#include <cctype>
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+  string z;
+  cin >> z;
+  string s = "";
+  for (int i = 0; i < z.length(); ) {
+    char ch = z[i];
+
+    if (__①__&& isdigit(z[i+1])) { 
+      i++;
+      int count = 0;
+      while (i < z.length() && isdigit(z[i])) {
+        count = __②__; 
+        i++;
+      }
+      for (int j = 0; j < __③__; ++j) { 
+        s += ch;
+      }
+    } else {
+      s += __④__; 
+      __⑤__;
+    }
+  }
+  cout << s << endl;
+  return 0;
+}
+```
 34. ① 处应填 ( )
 	+ `i < z.length()`
 	+ `i - 1 >= `
@@ -275,7 +381,36 @@ ii）糊涂人：判断不可靠，会给出随机的判断。
 例如，假设有三个人0、1、2。如果0说1是糊涂人，而1也说0是糊涂人，则0和1至少有一个是糊涂人。程序将同时淘汰0和1。由于三人里至少有两个精明人，我们确定2是精明人。试补全程序。
 
 试补全程序。
-#raw(read("t20.cpp"),block: true,lang: "cpp")
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int N;
+bool query(int i, int j);
+
+int main() {
+  cin >> N;
+
+  int candidate = 0;
+  int count = __①__; 
+
+  for (int i = 1; i < N; ++i) {
+    if (__②__) { 
+      candidate = i;
+      count = 1;
+    } else {
+      if (__③__) { 
+        __④__
+      } else {
+        count++;
+      }
+    }
+  }
+  cout << __⑤__ << endl; 
+  return 0;
+}
+```
 39. ① 处应填 ( )
 	+ `0`
 	+ `1`

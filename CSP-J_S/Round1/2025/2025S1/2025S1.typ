@@ -106,7 +106,36 @@
 = 阅读程序（程序输入不超过数组或字符串定义的范围；判断题正确填 $checkmark$，错误填 $crossmark$；除特殊说明外，判断题1.5分，选择题3分，共计40分）
 == 
 
-#raw(read("t16.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+bool flag[27];
+int n;
+int p[27];
+int ans = 0;
+void dfs(int k) {
+	if (k == n + 1) {
+		++ ans;
+		return;
+	}
+	for (int i = 1; i <= n; ++i) {
+		if (flag[i]) continue;
+		if (k > 1 && i == p[k - 1] + 1) continue;
+		p[k] = i;
+		flag[i] = true;
+		dfs(k + 1);
+		flag[i] = false;
+	}
+	return;
+}
+int main() {
+	scanf("%d", &n);
+	dfs(1);
+	printf("%d\n", ans);
+	return 0;
+}
+```
 
 
 $bullet$ 判断题
@@ -138,7 +167,74 @@ $bullet$ 选择题
 	+ 16
 	+ 12
 == 
-#raw(read("t17.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#define ll long long
+int cnt_broken = 0;
+int cnt_check = 0;
+int n, k;
+inline bool check(int h) {
+	printf("now check:%d\n", h);
+	++cnt_check;
+	if (cnt_broken == 2) {
+		printf("You have no egg!\n");
+		return false;
+	}
+	if (h >= k) {
+		++cnt_broken;
+		return true;
+	} else {
+		return false;
+	}
+}
+inline bool assert_ans(int h) {
+	if (h == k) {
+		printf("You are Right using %d checks\n", cnt_check);
+		return true;
+	} else {
+		printf("Wrong answer!\n");
+		return false;
+	}
+}
+inline void guess1(int n) {
+	for (int i = 1; i <= n; ++i) {
+		if (check(i)) {
+			assert_ans(i);
+			return;
+		}
+	}
+}
+inline void guess2(int n) {
+	int w = 0;
+	for (w = 1; w * (w + 1) / 2 < n; ++w)
+		;
+	for (int ti = w, nh = w;; --ti, nh += ti, nh = std::min(nh, n)) {
+		if (check(nh)) {
+			for (int j = nh - ti + 1; j < nh; ++j) {
+				if (check(j)) {
+					assert_ans(j);
+					return;
+				}
+			}
+			assert_ans(nh);
+			return;
+		}
+	}
+}
+int main() {
+	scanf("%d%d", &n, &k);
+	int t;
+	scanf("%d", &t);
+	if (t == 1) {
+		guess1(n);
+	} else {
+		guess2(n);
+	}
+	return 0;
+}
+```
 注意：下述的 “猜测数” 为调用 check 函数的次数（即 cnt_check 的值）；“猜测正确” 的含义为 assert_ans 函数 return true（执行第 25 行所在分支）的情况；所有输入保证 1 ≤ k ≤ n。
 
 $bullet$ 判断题
@@ -171,7 +267,70 @@ $bullet$ 选择题
 	+ 99,13
 
 ==
-#raw(read("t18.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#define ll long long
+int n, m;
+std::vector<int> k, p;
+inline int mpow(int x, int k) {
+	int ans = 1;
+	for (; k; k = k >> 1, x = x * x) {
+		if (k & 1)
+			ans = ans * x;
+	}
+	return ans;
+}
+std::vector<int> ans1, ans2;
+int cnt1, cnt2;
+inline void dfs(std::vector<int>& ans, int& cnt, int l, int r, int v) {
+	if (l > r) {
+		++cnt;
+		ans.push_back(v);
+		return;
+	}
+	for (int i = 1; i <= m; ++i) {
+		dfs(ans, cnt, l + 1, r, v + k[l] * mpow(i, p[l]));
+	}
+	return;
+}
+std::vector<int> cntans1;
+int main() {
+	scanf("%d%d", &n, &m);
+	k.resize(n + 1);
+	p.resize(n + 1);
+	for (int i = 1; i <= n; ++i) {
+		scanf("%d%d", &k[i], &p[i]);
+	}
+	dfs(ans1, cnt1, 1, n >> 1, 0);
+	dfs(ans2, cnt2, (n >> 1) + 1, n, 0);
+	std::sort(ans1.begin(), ans1.end());
+	int newcnt1 = 1;
+	cntans1.push_back(1);
+	for (int i = 1; i < cnt1; ++i) {
+		if (ans1[i] == ans1[newcnt1 - 1]) {
+			++cntans1[newcnt1 - 1];
+		} else {
+			ans1[newcnt1++] = ans1[i];
+			cntans1.push_back(1);
+		}
+	}
+	cnt1 = newcnt1;
+	std::sort(ans2.begin(), ans2.end());
+	int las = 0;
+	ll ans = 0;
+	for (int i = cnt2 - 1; i >= 0; --i) {
+		for (; las < cnt1 && ans1[las] + ans2[i] < 0; ++las)
+			;
+		if (las < cnt1 && ans1[las] + ans2[i] == 0)
+			ans += cntans1[las];
+	}
+	printf("%lld\n", ans);
+	return 0;
+}
+```
 
 $bullet$ 判断题
 28. 删除第 51 行的“ `std::sort(ans2.begin(),ans2.end());`” 后， 代码输出的结果不会受到影响。（ ）
@@ -205,7 +364,81 @@ $bullet$ 选择题
 
 以下代码求解了上述问题。试补全程序。
 
-#raw(read("t19.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+const long long INF = 1e18;
+
+struct Edge {
+	int to;
+	int weight;
+};
+
+struct State {
+	long long dist;
+	int u;
+	int used_freebie; // 0 for not used, 1 for used
+	bool operator>(const State &other) const {
+		return dist > other.dist;
+	}
+};
+
+int main() {
+	int n, m, s, t;
+	cin >> n >> m >> s >> t;
+
+	vector<vector<Edge>> adj(n + 1);
+	for (int i = 0; i < m; ++i) {
+		int u, v, w;
+		cin >> u >> v >> w;
+		adj[u].push_back({v, w});
+		adj[v].push_back({u, w});
+	}
+
+	vector<vector<long long>> d(n + 1, vector<long long>(2, INF));
+	priority_queue<State, vector<State>, greater<State >> pq;
+
+	d[s][0] = 0;
+	pq.push({0, s, ①});
+
+	while (!pq.empty()) {
+		State current = pq.top();
+		pq.pop();
+
+		long long dist = current.dist;
+		int u = current.u;
+		int used = current.used_freebie;
+
+		if (dist > ②) {
+			continue;
+		}
+
+		for (const auto &edge : adj[u]) {
+			int v = edge.to;
+			int w = edge.weight;
+
+			if (d[u][used] + w < ③) {
+				③ = d[u][used] + w;
+				pq.push({③, v, used});
+			}
+
+			if (used == 0) {
+				if (④ < d[v][1]) {
+					d[v][1] = ④;
+					pq.push({d[v][1], v, 1});
+				}
+			}
+		}
+	}
+
+	cout << ⑤ << endl;
+	return 0;
+}
+```
 33. ① 处应填 ( )
 	+ `0`
 	+ `1`
@@ -245,7 +478,94 @@ test_subset() 函数为抽象测试接口，输入所有批次的方案并返回
 
 
 试补全程序。
-#raw(read("t20.cpp"),block: true,lang: "cpp")
+```cpp
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+long long comb(int w, int i) {
+	if (i < 0 || i > w) {
+		return 0;
+	}
+	long long res = 1;
+	for (int t = 1; t <= i; ++t) {
+		res = res * (w - t + 1) / t;
+	}
+	return res;
+}
+
+// 计算长度为 w、1 的个数 ≤ k 的码字总数
+long long count_patterns(int w, int k) {
+	long long total = 0;
+	for (int t = 0; t <= min(w, k); ++t) {
+		total += comb(w, t);
+	}
+	return total;
+}
+
+// 抽象测试接口
+int test_subset(const vector<vector<int>> &plan);
+
+int solve(int n, int k) {
+	// === 第 1 步：求最小 w ===
+	int w = 1;
+	while (___①___) {
+		++w;
+	}
+	cout << w << endl;
+
+	// === 第 2 步：生成测试方案 ===
+	vector<vector<int>> code(n, vector<int>(w, 0));
+	int idx = 0;
+	for (int ones = 0; ones <= k && idx < n; ++ones) {
+		vector<int> bits(w, 0);
+		fill(bits.begin(), bits.begin() + ones, 1);
+		do {
+			for (int b = 0; b < w; ++b) {
+				code[idx][b] = bits[b];
+			}
+			++idx;
+			if (idx >= n) {
+				break;
+			}
+		} while (std::___②___);
+	}
+
+	vector<vector<int>> plan(w);
+	for (int i = 0; i < w; ++i) {
+		for (int j = 0; j < n; ++j) {
+			if (___③___) {
+				plan[i].push_back(j);
+			}
+		}
+	}
+
+	// === 第 3 步：调用测试接口 ===
+	int signature = test_subset(plan);
+
+	// === 第 4 步：结果解码 ===
+	vector<int> sig_bits(w, 0);
+	for (int i = 0; i < w; ++i) {
+		if (___④___) {
+			sig_bits[i] = 1;
+		}
+	}
+
+	for (int j = 0; j < n; ++j) {
+		if (___⑤___) return j;
+	}
+}
+
+int main() {
+	int n, k;
+	cin >> n >> k;
+	int ans = solve();
+	cout << ans << endl;
+	return 0;
+}
+```
 38. ① 处应填 ( )
 	+ `(1 << w) < n`
 	+ `count_patterns(w, k) < n`
